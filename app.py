@@ -25,102 +25,124 @@ ASSET_DIR = Path(__file__).parent / "assets"
 
 BATHHOUSE_ROLES = [
     {
-        "title": "Boiler Room Coal Runner",
-        "description": "Carry enchanted coal chips to the boiler room and keep the pipes awake through the steam-heavy night.",
+        "title": "Guest Intake Clerk",
+        "responsibilities": [
+            "Register arriving spirits or unidentified entities at the front desk.",
+            "Assign each guest a bath token, room number, and service priority based on their requested service.",
+            "Record unusual guest traits, including odor, size, temperament, and possible curses.",
+            "Alert senior staff when a guest appears especially ancient, wealthy, or dangerous.",
+        ],
     },
     {
-        "title": "Herbal Soak Apprentice",
-        "description": "Sort fragrant bath tokens and prepare restorative blends for guests with unusual aches and older-than-usual bones.",
+        "title": "Token Attendant",
+        "responsibilities": [
+            "Distribute bath tokens according to each guest's assigned token.",
+            "Verify that tokens are not forged, stolen, or duplicated.",
+            "Collect used tokens and return them to the proper sorting trays.",
+            "Report missing or unaccounted-for tokens to the Boiler Tag Sorter.",
+        ],
     },
     {
-        "title": "River Guest Attendant",
-        "description": "Guide muddy river visitors to the deep-cleaning baths and record all recovered objects in the ledger.",
+        "title": "Spirit Concierge",
+        "responsibilities": [
+            "Guide guests through the bathhouse without offending their customs, titles, or appetites.",
+            "Recommend appropriate baths, meals, and attendants based on each spirit's needs.",
+            "Calm confused guests who have entered the wrong floor (or realm).",
+            "Escort important visitors while pretending not to notice anything frightening about them.",
+        ],
     },
     {
-        "title": "Spirit Towel Steward",
-        "description": "Fold warm towels, replace vanishing linens, and pretend not to notice when the stacks rearrange themselves.",
+        "title": "Dining Monitor",
+        "responsibilities": [
+            "Observe dining guests for signs of unusual hunger, loneliness, or gold-related disruption.",
+            "Limit excessive food service when a guest's appetite becomes concerning.",
+            "Notify management if a guest begins consuming furniture, staff, or the atmosphere.",
+        ],
     },
     {
-        "title": "Night Shift Lamp Lighter",
-        "description": "Light the corridor lanterns at dusk and whisper the closing inventory to each flame before dawn.",
+        "title": "Window Handler",
+        "responsibilities": [
+            "Open designated windows during visits from especially muddy, stinky, or other swamp-adjacent guests.",
+            "Monitor airflow to clear unpleasant odors without disturbing honored spirits.",
+            "Guard open windows to prevent pests and other unauthorized guests from slipping inside.",
+            "Close and latch every window once the air is safe, unless the room itself objects.",
+        ],
+    },
+    {
+        "title": "Lantern Lighter",
+        "responsibilities": [
+            "Light lanterns along bridges, alleys, stairways, corridors, and exterior balconies at dusk.",
+            "Replace burned-out wicks and cracked glass.",
+            "Extinguish lanterns at dawn.",
+        ],
+    },
+    {
+        "title": "Boiler Room Tag Associate",
+        "responsibilities": [
+            "Match each tag received with the proper water temperature, herb blend, and tub assignment.",
+            "Prioritize urgent requests from senior staff or especially muddy guests.",
+        ],
     },
     {
         "title": "Soot Sprite Snack Clerk",
-        "description": "Distribute star-shaped sugar rations and keep the soot workers from unionizing during peak hours.",
+        "responsibilities": [
+            "Distribute star-shaped sugar rations to soot workers at scheduled intervals.",
+            "Monitor soot sprite morale during rush periods, furnace surges, and unexpected overtime.",
+            "Keep snack storage organized, sealed, and protected from tiny coal-dusted fingers.",
+            "Report signs of unrest or unionizing from soot sprites.",
+        ],
     },
     {
-        "title": "Elevator Etiquette Monitor",
-        "description": "Escort guests between floors while maintaining silence, posture, and plausible deniability.",
-    },
-    {
-        "title": "Steam Vent Cartographer",
-        "description": "Map shifting pipes, label dangerous valves, and update the bathhouse floor plan when the walls disagree.",
-    },
-    {
-        "title": "Guest Ledger Copyist",
-        "description": "Transcribe arrivals, debts, favors, and missing names in red ink that dries only after sunset.",
-    },
-    {
-        "title": "Kitchen Dumpling Runner",
-        "description": "Rush midnight orders across the bridge and never ask why some plates return cleaner than porcelain should be.",
-    },
-    {
-        "title": "Bath Token Auditor",
-        "description": "Count, sort, and authenticate bath tokens according to a policy manual no employee has finished reading.",
-    },
-    {
-        "title": "Bridge Crossing Usher",
-        "description": "Manage arrivals on the bridge, remind workers not to breathe at the wrong moment, and keep the line moving.",
-    },
-    {
-        "title": "Rain Bucket Dispatcher",
-        "description": "Place buckets beneath mysterious leaks and file weather reports for rooms that are technically indoors.",
-    },
-    {
-        "title": "Aromatic Salt Archivist",
-        "description": "Catalog rare bath salts by scent, moon phase, and the dreams they cause in exhausted attendants.",
+        "title": "Herbal Soak Apprentice",
+        "responsibilities": [
+            "Sort fragrant bath tokens by herb blend, water temperature, and guest condition.",
+            "Prepare restorative soaks for spirits with strange aches, ancient bones, or weather-related moods.",
+            "Measure herbs, salts, oils, and powders according to bathhouse recipes.",
+            "Clean and restock the herbal station before the next wave of guests arrives.",
+        ],
     },
     {
         "title": "Customer Complaint Medium",
-        "description": "Receive grievances from visible and invisible guests, then translate them into actionable bathhouse paperwork.",
-    },
-    {
-        "title": "Porcelain Tub Polisher",
-        "description": "Scrub ceremonial tubs until they reflect not your face, but your most recent unpaid obligation.",
-    },
-    {
-        "title": "Furnace Bell Scheduler",
-        "description": "Ring the furnace bells on the quarter hour, except when the quarter hour rings first.",
-    },
-    {
-        "title": "Moonlit Inventory Clerk",
-        "description": "Count supplies that appear only after midnight and submit totals before they become imaginary again.",
+        "responsibilities": [
+            "Receive complaints from guests who are visible, invisible, half-present, or speaking through walls.",
+            "Translate groans, rattles, whispers, and dramatic silences into clear service notes.",
+            "Forward urgent grievances to the proper department before they become curses.",
+            "Maintain a calm, respectful tone while being blamed for events that happened in other worlds.",
+        ],
     },
 ]
 
 
-NAME_SYLLABLES = [
-    "A",
-    "Chi",
-    "E",
-    "Ha",
-    "Ka",
-    "Ko",
-    "Ma",
-    "Mi",
-    "Na",
-    "No",
-    "Ra",
-    "Ren",
-    "Sa",
-    "Sen",
-    "Shi",
-    "So",
-    "Ta",
-    "Tsu",
-    "Yu",
-    "Zu",
-]
+VOWELS = "aeiou"
+FALLBACK_VOWELS = ["a", "i", "o", "u", "e"]
+FALLBACK_CONSONANTS = ["n", "k", "m", "s", "r", "t", "h"]
+READABLE_CONSONANT_PAIRS = {
+    "br",
+    "bl",
+    "ch",
+    "cl",
+    "cr",
+    "dr",
+    "fl",
+    "fr",
+    "gl",
+    "gr",
+    "pl",
+    "pr",
+    "sc",
+    "sh",
+    "sk",
+    "sl",
+    "sm",
+    "sn",
+    "sp",
+    "st",
+    "sw",
+    "th",
+    "tr",
+    "tw",
+    "wh",
+}
 
 
 def inject_css() -> None:
@@ -354,6 +376,37 @@ def inject_css() -> None:
                 padding-top: 0.12rem;
             }
 
+            .contract-sections {
+                display: grid;
+                gap: 1rem;
+                margin: 1rem 0 1.4rem;
+            }
+
+            .contract-section {
+                border: 1px solid rgba(36, 25, 21, 0.18);
+                border-radius: 6px;
+                background: rgba(255, 251, 239, 0.48);
+                padding: 0.9rem 1rem;
+            }
+
+            .contract-section h3 {
+                margin: 0 0 0.55rem;
+                color: #2b1d16;
+                font-size: 1rem;
+                letter-spacing: 0.02em;
+                text-transform: uppercase;
+            }
+
+            .contract-section ol {
+                margin: 0;
+                padding-left: 1.25rem;
+                color: #3b2a21;
+            }
+
+            .contract-section li {
+                margin: 0.42rem 0;
+            }
+
             .signature-line {
                 margin-top: 1rem;
                 border-top: 1px solid rgba(36, 25, 21, 0.42);
@@ -510,6 +563,37 @@ def inject_css() -> None:
 
             .assignment-box strong {
                 font-size: 1.45rem;
+            }
+
+            .duties-panel {
+                margin-top: 1rem;
+                border: 1px solid rgba(36, 25, 21, 0.18);
+                border-radius: 6px;
+                background: rgba(255, 251, 239, 0.68);
+                padding: 1rem 1.1rem;
+            }
+
+            .duties-panel span {
+                display: block;
+                color: var(--muted);
+                font-size: 0.88rem;
+                margin-bottom: 0.45rem;
+            }
+
+            .duties-list {
+                margin: 0;
+                padding-left: 1.25rem;
+                color: #3b2a21;
+            }
+
+            .duties-list li {
+                margin: 0.35rem 0;
+            }
+
+            .report-line {
+                margin: 1rem 0 0;
+                color: #3b2a21;
+                font-weight: 700;
             }
 
             .footer-note {
@@ -831,25 +915,93 @@ def deterministic_rng(full_name: str) -> random.Random:
     return random.Random(int(digest[:16], 16))
 
 
+def letters_by_type(letters: str, want_vowels: bool) -> list[str]:
+    return [letter for letter in letters if (letter in VOWELS) == want_vowels]
+
+
+def supplement_letters(existing: list[str], fallback_pool: list[str], needed_count: int) -> list[str]:
+    supplemented = existing.copy()
+    for fallback in fallback_pool:
+        if len(supplemented) >= needed_count:
+            break
+        supplemented.append(fallback)
+
+    return supplemented[:needed_count]
+
+
+def ordered_pairs(letters: list[str]) -> list[tuple[str, str]]:
+    return [
+        (first, second)
+        for first_index, first in enumerate(letters)
+        for second in letters[first_index + 1 :]
+    ]
+
+
+def choose_readable_consonant_pair(consonants: list[str], rng: random.Random) -> list[str]:
+    pairs = ordered_pairs(consonants)
+    readable_pairs = [
+        pair
+        for pair in pairs
+        if "".join(pair) in READABLE_CONSONANT_PAIRS
+        or "".join(reversed(pair)) in READABLE_CONSONANT_PAIRS
+    ]
+
+    if readable_pairs:
+        first, second = rng.choice(readable_pairs)
+        if f"{first}{second}" in READABLE_CONSONANT_PAIRS:
+            return [first, second]
+        return [second, first]
+
+    combined_consonants = [(consonant, True) for consonant in consonants] + [
+        (consonant, False) for consonant in FALLBACK_CONSONANTS
+    ]
+    fallback_pairs = []
+    for first_index, (first, first_is_original) in enumerate(combined_consonants):
+        for second, second_is_original in combined_consonants[first_index + 1 :]:
+            pair = (first, second)
+            if (
+                "".join(pair) in READABLE_CONSONANT_PAIRS
+                or "".join(reversed(pair)) in READABLE_CONSONANT_PAIRS
+            ):
+                original_count = int(first_is_original) + int(second_is_original)
+                fallback_pairs.append((original_count, pair))
+
+    if fallback_pairs:
+        highest_original_count = max(original_count for original_count, _ in fallback_pairs)
+        best_pairs = [
+            pair
+            for original_count, pair in fallback_pairs
+            if original_count == highest_original_count
+        ]
+        first, second = rng.choice(best_pairs)
+        if f"{first}{second}" in READABLE_CONSONANT_PAIRS:
+            return [first, second]
+        return [second, first]
+
+    return ["s", "t"]
+
+
 def generate_bathhouse_name(full_name: str) -> str:
-    """Create a short new name from pieces of the submitted name."""
+    """Create a short readable name using signed-name letters whenever possible."""
     cleaned = clean_name(full_name)
     rng = deterministic_rng(cleaned or "unnamed worker")
 
     letters = re.sub(r"[^A-Za-z]", "", cleaned).lower()
-    if len(letters) >= 2:
-        first_piece = letters[0].upper()
-        second_piece = letters[len(letters) // 2]
-        candidate = f"{first_piece}{second_piece}"
-    elif letters:
-        candidate = letters[0].upper()
+    vowels = letters_by_type(letters, want_vowels=True)
+    consonants = letters_by_type(letters, want_vowels=False)
+
+    can_make_ccv = len(consonants) >= 2 and len(vowels) >= 1
+    can_make_vvc = len(vowels) >= 2
+    should_make_ccv = can_make_ccv or (not can_make_vvc and len(consonants) >= len(vowels))
+
+    if should_make_ccv:
+        first_two = choose_readable_consonant_pair(consonants, rng)
+        final_letter = supplement_letters(vowels, FALLBACK_VOWELS, 1)[0]
     else:
-        candidate = rng.choice(NAME_SYLLABLES)
+        first_two = supplement_letters(vowels, FALLBACK_VOWELS, 2)
+        final_letter = supplement_letters(consonants, FALLBACK_CONSONANTS, 1)[0]
 
-    if rng.random() > 0.45:
-        candidate += rng.choice(["n", "i", "u", "o", "a"])
-
-    return candidate[:4]
+    return f"{first_two[0]}{first_two[1]}{final_letter}".capitalize()
 
 
 def generate_assignment(full_name: str) -> dict:
@@ -859,7 +1011,7 @@ def generate_assignment(full_name: str) -> dict:
     return {
         "new_name": generate_bathhouse_name(full_name),
         "role": role["title"],
-        "description": role["description"],
+        "responsibilities": role["responsibilities"],
         "contract_number": contract_number,
     }
 
@@ -907,6 +1059,8 @@ def render_header() -> None:
         <section class="hero">
             <h1>Bathhouse Employment Contract</h1>
             <p>Before entering, all seekers of employment must sign.</p>
+            <p>Disclaimer: Fictional contract, not legally binding in any way. No actual bathhouse labor rights are conferred by signing. </p>
+            <p>No personal information is stored in any way.</p>
         </section>
         """,
         unsafe_allow_html=True,
@@ -928,12 +1082,39 @@ def render_contract_form() -> None:
             <div class="contract-title">
               <h2>Terms of Service and Employment</h2>
             </div>
-            <div class="clauses">
-              <div class="clause">The applicant requests entry into the bathhouse as a worker and accepts that ordinary guest privileges end at the threshold.</div>
-              <div class="clause">The applicant acknowledges that names carry memory, history, and obligation. Upon acceptance, the Records Office may archive the applicant's old name and issue a shorter working name.</div>
-              <div class="clause">The applicant agrees to perform assigned duties with care, discretion, and respect for guests whose shapes, smells, and complaints may change without notice.</div>
-              <div class="clause">The bathhouse may revise schedules during storms, feasts, inspections, or supernatural emergencies. Breaks are subject to steam pressure and ledger approval.</div>
-              <div class="clause">The applicant understands that this contract is fictional and created for classroom interpretation, not for real employment, debt, or legal surrender.</div>
+            <div class="contract-sections">
+              <section class="contract-section">
+                <h3>Agreement to Employment</h3>
+                <ol>
+                  <li>The applicant requests entry into the bathhouse as a permanent worker and accepts assignment by the bathhouse superiors.</li>
+                  <li>The applicant agrees to perform duties promptly, quietly, and without refusing any given task.</li>
+                  <li>Work assignments are all encompassing and are not limited to any specfic set of tasks.</li>
+                  <li>The applicant understands that failure to comply with these terms may result in pig transformation.</li>
+                  <li>The applicant understands that more fine print will become visible after signing.</li>
+                </ol>
+              </section>
+              <section class="contract-section">
+                <h3>Surrender of Name</h3>
+                <ol>
+                  <li>The applicant acknowledges that names carry memory, identity, family history, and obligation.</li>
+                  <li>Upon acceptance, the applicant's submitted name will be taken by the Yubaba.</li>
+                  <li>The applicant agrees to answer to the issued name at all times.</li>
+                </ol>
+              </section>
+              <section class="contract-section">
+                <h3>Conduct and Compliance</h3>
+                <ol>
+                  <li>The applicant shall treat all guests, spirits, workers, managers, and soot-adjacent staff with caution and respect.</li>
+                  <li>The applicant shall follow posted signs, whispered instructions, emergency bells, and all orders from senior staff.</li>
+                </ol>
+              </section>
+              <section class="contract-section">
+                <h3>Hazards</h3>
+                <ol>
+                  <li>The applicant understands that bathhouse labor may involve steam burns, slippery floors, heavy buckets, strong odors, moving walls, and emotionally complicated customers.</li>
+                  <li>The applicant may encounter curses, transformations, floods, smoke, soot, or unknown entities.</li>
+                </ol>
+              </section>
             </div>
           </div>
         </div>
@@ -957,6 +1138,7 @@ def render_contract_form() -> None:
             value=st.session_state.get("signature", ""),
             placeholder="Type your name as your signature",
         )
+        st.text("*Turn volume up before you submit!*")
 
         submitted = st.form_submit_button("Sign and Surrender Name")
 
@@ -979,7 +1161,7 @@ def render_contract_form() -> None:
             st.rerun()
 
     st.markdown(
-        '<p class="footer-note">Steam rises. Ink dries. The line continues moving.</p>',
+        '<p class="footer-note"></p>',
         unsafe_allow_html=True,
     )
 
@@ -1026,7 +1208,7 @@ def render_name_surrender_transition() -> None:
     rename_duration = len(old_name) * delete_delay + rewrite_pause + len(new_name) * type_delay
     belongs_to_me_duration = mp3_duration_seconds("belongs_to_me.mp3")
 
-    placeholder.markdown(render_renaming_frame(old_name, "Locating name in ledger"), unsafe_allow_html=True)
+    placeholder.markdown(render_renaming_frame(old_name, "Storing Name in Ledger"), unsafe_allow_html=True)
     play_audio_file("pretty_name.mp3")
     time.sleep(mp3_duration_seconds("pretty_name.mp3") + 0.2)
 
@@ -1064,6 +1246,10 @@ def render_confirmation() -> None:
     pronouns = st.session_state.get("pronouns")
     signature = st.session_state.get("signature", full_name)
     assignment = st.session_state.get("assignment", generate_assignment(full_name))
+    if not assignment.get("responsibilities"):
+        source_name = st.session_state.get("original_full_name", full_name)
+        assignment = generate_assignment(source_name)
+        st.session_state.assignment = assignment
     signed_at = datetime.now().strftime("%B %d, %Y at %I:%M %p")
     safe_full_name = html.escape(full_name)
     safe_signature = html.escape(signature)
@@ -1071,7 +1257,13 @@ def render_confirmation() -> None:
     safe_contract_number = html.escape(assignment["contract_number"])
     safe_new_name = html.escape(assignment["new_name"])
     safe_role = html.escape(assignment["role"])
-    safe_description = html.escape(assignment["description"])
+    safe_responsibilities = [
+        html.escape(responsibility)
+        for responsibility in assignment.get("responsibilities", [])
+    ]
+    responsibilities_items = "".join(
+        f"<li>{responsibility}</li>" for responsibility in safe_responsibilities
+    )
 
     pronoun_line = f"<div class='meta-box'><strong>Pronouns</strong>{safe_pronouns}</div>" if pronouns else ""
 
@@ -1088,10 +1280,7 @@ def render_confirmation() -> None:
               <div class="accepted-stamp">Accepted</div>
             </div>
             <div class="contract-title">
-              <h2>Your old name belongs to me now</h2>
-            </div>
-            <div class="contract-name">
-                <h2> From now on your name is {safe_new_name}</h2>
+              <h2>From now on your name is {safe_new_name}</h2>
             </div>
             <div class="assignment-grid">
               <div class="assignment-box">
@@ -1103,9 +1292,12 @@ def render_confirmation() -> None:
                 <strong>{safe_role}</strong>
               </div>
             </div>
-            <div class="clauses">
-              <div class="clause">First duties: {safe_description}</div>
-              <div class="clause">Report to the service corridor before the next bell. Bring comfortable shoes and a willingness to be renamed by paperwork.</div>
+            <div class="duties-panel">
+              <span>Duties and Responsibilities</span>
+              <ol class="duties-list">
+                {responsibilities_items}
+              </ol>
+              <p class="report-line">Please report to the service corridor before the next bell.</p>
             </div>
             <div class="signature-line">Bathhouse Records Office Seal</div>
           </div>
