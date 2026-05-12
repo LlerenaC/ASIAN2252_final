@@ -1,11 +1,15 @@
 import hashlib
 import html
+import base64
 import random
 import re
 import textwrap
+import time
 from datetime import datetime
+from pathlib import Path
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 
 st.set_page_config(
@@ -14,6 +18,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+
+ASSET_DIR = Path(__file__).parent / "assets"
 
 
 BATHHOUSE_ROLES = [
@@ -412,6 +419,74 @@ def inject_css() -> None:
                 animation: details-settle 520ms 180ms ease-out both;
             }
 
+            .rename-shell {
+                min-height: 24rem;
+                animation: document-arrival 420ms ease-out both;
+            }
+
+            .rename-panel {
+                display: grid;
+                gap: 0.95rem;
+                max-width: 42rem;
+                margin: 1.25rem auto 0;
+            }
+
+            .rename-label {
+                color: var(--muted);
+                font-size: 0.9rem;
+                font-weight: 800;
+                text-transform: uppercase;
+            }
+
+            .rename-field {
+                min-height: 4.7rem;
+                display: flex;
+                align-items: center;
+                border: 2px solid rgba(36, 25, 21, 0.34);
+                border-radius: 6px;
+                background: rgba(255, 251, 239, 0.82);
+                padding: 0.72rem 1rem;
+                box-shadow: inset 0 2px 0 rgba(36, 25, 21, 0.07);
+                color: var(--ink);
+                font-size: clamp(1.65rem, 6vw, 3.15rem);
+                font-weight: 900;
+                letter-spacing: 0;
+                line-height: 1.08;
+            }
+
+            .rename-field.empty {
+                color: rgba(36, 25, 21, 0.32);
+            }
+
+            .rename-cursor {
+                display: inline-block;
+                width: 0.12em;
+                height: 1em;
+                margin-left: 0.08em;
+                background: var(--seal);
+                animation: cursor-blink 680ms steps(1) infinite;
+            }
+
+            .rename-action {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: #7a251f;
+                font-size: 0.96rem;
+                font-weight: 800;
+            }
+
+            .rename-action::before {
+                content: "";
+                width: 0.75rem;
+                height: 0.75rem;
+                border-radius: 999px;
+                background: var(--seal);
+                box-shadow: 1.2rem 0 0 rgba(163, 32, 32, 0.52), 2.4rem 0 0 rgba(163, 32, 32, 0.2);
+                margin-right: 2.35rem;
+                animation: ledger-pulse 880ms ease-in-out infinite;
+            }
+
             .assignment-grid {
                 display: grid;
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -546,6 +621,29 @@ def inject_css() -> None:
                 }
             }
 
+            @keyframes cursor-blink {
+                0%,
+                48% {
+                    opacity: 1;
+                }
+                49%,
+                100% {
+                    opacity: 0;
+                }
+            }
+
+            @keyframes ledger-pulse {
+                0%,
+                100% {
+                    opacity: 0.45;
+                    transform: translateY(0);
+                }
+                50% {
+                    opacity: 1;
+                    transform: translateY(-0.08rem);
+                }
+            }
+
             @media (prefers-reduced-motion: reduce) {
                 .confirmation-shell,
                 .confirmation-shell::after,
@@ -564,6 +662,11 @@ def inject_css() -> None:
                 .accepted-stamp {
                     opacity: 0.94;
                     transform: rotate(-7deg);
+                }
+
+                .rename-cursor,
+                .rename-action::before {
+                    animation: none;
                 }
             }
 
@@ -608,6 +711,114 @@ def render_html(markup: str) -> None:
         st.html(cleaned_markup)
     else:
         st.markdown(cleaned_markup, unsafe_allow_html=True)
+
+
+def audio_data_uri(filename: str) -> str:
+    audio_path = ASSET_DIR / filename
+    audio_bytes = audio_path.read_bytes()
+    encoded_audio = base64.b64encode(audio_bytes).decode("utf-8")
+    return f"data:audio/mpeg;base64,{encoded_audio}"
+
+
+def play_audio_file(
+    filename: str,
+    loop: bool = False,
+    stop_after_ms: int | None = None,
+    delay_ms: int = 0,
+) -> None:
+    audio_uri = audio_data_uri(filename)
+    loop_value = "true" if loop else "false"
+    stop_script = ""
+    if stop_after_ms is not None:
+        stop_script = f"""
+            setTimeout(() => {{
+              audio.pause();
+              audio.currentTime = 0;
+            }}, {stop_after_ms});
+        """
+
+    components.html(
+        f"""
+        <script>
+          (() => {{
+            const audio = new Audio("{audio_uri}");
+            audio.volume = 1.0;
+            audio.loop = {loop_value};
+            setTimeout(() => {{
+              audio.play().catch(() => {{}});
+            }}, {delay_ms});
+            {stop_script}
+          }})();
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
+
+
+def mp3_duration_seconds(filename: str) -> float:
+    audio_bytes = (ASSET_DIR / filename).read_bytes()
+    index = 0
+    if audio_bytes[:3] == b"ID3" and len(audio_bytes) > 10:
+        tag_size = 0
+        for byte in audio_bytes[6:10]:
+            tag_size = (tag_size << 7) | (byte & 0x7F)
+        index = 10 + tag_size
+
+    bitrates = {
+        3: {
+            3: [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320],
+            2: [0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384],
+            1: [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320],
+        },
+        2: {
+            3: [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160],
+            2: [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160],
+            1: [0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256],
+        },
+    }
+    sample_rates = {
+        3: [44100, 48000, 32000],
+        2: [22050, 24000, 16000],
+        0: [11025, 12000, 8000],
+    }
+
+    duration = 0.0
+    while index + 4 <= len(audio_bytes):
+        header = int.from_bytes(audio_bytes[index : index + 4], "big")
+        if (header >> 21) & 0x7FF != 0x7FF:
+            index += 1
+            continue
+
+        version_bits = (header >> 19) & 0x3
+        layer_bits = (header >> 17) & 0x3
+        bitrate_index = (header >> 12) & 0xF
+        sample_rate_index = (header >> 10) & 0x3
+        padding = (header >> 9) & 0x1
+
+        if version_bits == 1 or layer_bits == 0 or bitrate_index in (0, 15) or sample_rate_index == 3:
+            index += 1
+            continue
+
+        version_key = 3 if version_bits == 3 else 2
+        layer = 4 - layer_bits
+        bitrate_kbps = bitrates[version_key][layer][bitrate_index]
+        sample_rate = sample_rates[version_bits][sample_rate_index]
+        samples_per_frame = 384 if layer == 1 else 1152 if version_bits == 3 else 576
+        if layer == 1:
+            frame_size = int(((12 * bitrate_kbps * 1000 / sample_rate) + padding) * 4)
+        else:
+            coefficient = 144 if version_bits == 3 else 72
+            frame_size = int((coefficient * bitrate_kbps * 1000 / sample_rate) + padding)
+
+        if frame_size <= 0:
+            index += 1
+            continue
+
+        duration += samples_per_frame / sample_rate
+        index += frame_size
+
+    return duration or 2.5
 
 
 def clean_name(full_name: str) -> str:
@@ -656,7 +867,9 @@ def generate_assignment(full_name: str) -> dict:
 def reset_contract() -> None:
     for key in [
         "submitted",
+        "renaming",
         "full_name",
+        "original_full_name",
         "pronouns",
         "signature",
         "assignment",
@@ -675,7 +888,12 @@ def render_sidebar() -> None:
 
 
 def render_header() -> None:
-    status_text = "Signature Accepted" if st.session_state.get("submitted") else "Awaiting Signature"
+    if st.session_state.get("submitted"):
+        status_text = "Signature Accepted"
+    elif st.session_state.get("renaming"):
+        status_text = "Renaming Applicant"
+    else:
+        status_text = "Awaiting Signature"
 
     st.markdown(
         f"""
@@ -704,7 +922,7 @@ def render_contract_form() -> None:
           <div class="document-inner">
             <div class="contract-meta">
               <div class="meta-box"><strong>Contract No.</strong>{assignment_preview["contract_number"]}</div>
-              <div class="meta-box"><strong>Prepared By</strong>Bathhouse Records Office</div>
+              <div class="meta-box"><strong>Prepared By</strong> Yubaba </div>
               <div class="meta-box"><strong>Status</strong>Unsigned</div>
             </div>
             <div class="contract-title">
@@ -750,11 +968,14 @@ def render_contract_form() -> None:
         elif signature.strip().lower() != full_name.strip().lower():
             st.error("Your typed signature must match the submitted full name.")
         else:
-            st.session_state.full_name = clean_name(full_name)
+            cleaned_full_name = clean_name(full_name)
+            st.session_state.full_name = cleaned_full_name
+            st.session_state.original_full_name = cleaned_full_name
             st.session_state.pronouns = pronouns.strip()
             st.session_state.signature = signature.strip()
-            st.session_state.assignment = generate_assignment(full_name)
-            st.session_state.submitted = True
+            st.session_state.assignment = generate_assignment(cleaned_full_name)
+            st.session_state.renaming = True
+            st.session_state.submitted = False
             st.rerun()
 
     st.markdown(
@@ -763,7 +984,82 @@ def render_contract_form() -> None:
     )
 
 
+def render_renaming_frame(name_text: str, action_text: str) -> str:
+    safe_name = html.escape(name_text) if name_text else " "
+    empty_class = " empty" if not name_text else ""
+    safe_action = html.escape(action_text)
+
+    return textwrap.dedent(
+        f"""
+        <div class="document-shell rename-shell">
+          <div class="document-inner">
+            <div class="contract-meta">
+              <div class="meta-box"><strong>Status</strong>Processing surrender</div>
+              <div class="meta-box"><strong>Ledger Action</strong>Name reassignment</div>
+              <div class="meta-box"><strong>Office</strong>Bathhouse Records</div>
+            </div>
+            <div class="contract-title">
+              <h2>Applicant Information</h2>
+            </div>
+            <div class="rename-panel" aria-live="polite">
+              <div class="rename-label">Full legal name</div>
+              <div class="rename-field{empty_class}">
+                <span>{safe_name}</span><span class="rename-cursor"></span>
+              </div>
+              <div class="rename-action">{safe_action}</div>
+            </div>
+          </div>
+        </div>
+        """
+    ).strip()
+
+
+def render_name_surrender_transition() -> None:
+    old_name = st.session_state.get("original_full_name") or st.session_state.get("full_name", "")
+    assignment = st.session_state.get("assignment", generate_assignment(old_name))
+    new_name = assignment["new_name"]
+    placeholder = st.empty()
+    delete_delay = 0.12
+    rewrite_pause = 0.45
+    type_delay = 0.22
+    final_hold = 3
+    rename_duration = len(old_name) * delete_delay + rewrite_pause + len(new_name) * type_delay
+    belongs_to_me_duration = mp3_duration_seconds("belongs_to_me.mp3")
+
+    placeholder.markdown(render_renaming_frame(old_name, "Locating name in ledger"), unsafe_allow_html=True)
+    play_audio_file("pretty_name.mp3")
+    time.sleep(mp3_duration_seconds("pretty_name.mp3") + 0.2)
+
+    play_audio_file("belongs_to_me.mp3")
+
+    for length in range(len(old_name) - 1, -1, -1):
+        placeholder.markdown(
+            render_renaming_frame(old_name[:length], "Erasing submitted name"),
+            unsafe_allow_html=True,
+        )
+        time.sleep(delete_delay)
+
+    time.sleep(rewrite_pause)
+
+    for length in range(1, len(new_name) + 1):
+        placeholder.markdown(
+            render_renaming_frame(new_name[:length], "Issuing bathhouse name"),
+            unsafe_allow_html=True,
+        )
+        time.sleep(type_delay)
+
+    placeholder.markdown(render_renaming_frame(new_name, "Name reassignment complete"), unsafe_allow_html=True)
+    time.sleep(max(final_hold, belongs_to_me_duration - rename_duration + 0.2))
+
+    st.session_state.full_name = new_name
+    st.session_state.renaming = False
+    st.session_state.submitted = True
+    st.rerun()
+
+
 def render_confirmation() -> None:
+    play_audio_file("stamp.mp3", delay_ms=1180)
+
     full_name = st.session_state.get("full_name", "Unnamed Worker")
     pronouns = st.session_state.get("pronouns")
     signature = st.session_state.get("signature", full_name)
@@ -829,6 +1125,8 @@ def main() -> None:
     with center:
         if st.session_state.get("submitted"):
             render_confirmation()
+        elif st.session_state.get("renaming"):
+            render_name_surrender_transition()
         else:
             render_contract_form()
 
