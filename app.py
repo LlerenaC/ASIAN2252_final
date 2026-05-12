@@ -1,6 +1,8 @@
 import hashlib
+import html
 import random
 import re
+import textwrap
 from datetime import datetime
 
 import streamlit as st
@@ -116,7 +118,7 @@ NAME_SYLLABLES = [
 
 def inject_css() -> None:
     """Add a visual layer that evokes parchment, red seals, and signing software."""
-    st.markdown(
+    render_html(
         """
         <style>
             :root {
@@ -199,9 +201,8 @@ def inject_css() -> None:
             }
 
             .hero h1 {
-                font-size: clamp(2.2rem, 6vw, 4.75rem);
+                font-size: clamp(1.8rem, 6vw, 4.3rem);
                 line-height: 0.95;
-                margin: 0 0 0.75rem;
                 color: #211510;
                 letter-spacing: 0;
             }
@@ -222,6 +223,24 @@ def inject_css() -> None:
                     linear-gradient(180deg, var(--paper) 0%, #f9e7bf 100%);
                 box-shadow: 0 24px 55px rgba(36, 25, 21, 0.18);
                 overflow: hidden;
+            }
+
+            .confirmation-shell {
+                min-height: 34rem;
+                animation: document-arrival 520ms cubic-bezier(0.18, 0.82, 0.26, 1) both;
+            }
+
+            .confirmation-shell::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background:
+                    radial-gradient(circle at 50% 8.5rem, rgba(163, 32, 32, 0.26), transparent 13rem),
+                    linear-gradient(180deg, rgba(255, 245, 221, 0), rgba(255, 245, 221, 0.34));
+                opacity: 0;
+                pointer-events: none;
+                animation: impact-flash 760ms 900ms ease-out both;
+                z-index: 2;
             }
 
             .document-shell::before {
@@ -265,15 +284,42 @@ def inject_css() -> None:
 
             .contract-title {
                 border-top: 2px solid rgba(36, 25, 21, 0.55);
+                padding: 0.85rem 0;
+                text-align: center;
+                position: relative;
+            }
+
+            .contract-title::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 575px; /* This is your "border length" */
+                border-bottom: 2px solid black;
+                }
+
+            .contract-name {
                 border-bottom: 2px solid rgba(36, 25, 21, 0.55);
                 padding: 0.85rem 0;
-                margin-bottom: 1.15rem;
+                margin-bottom: 1.00rem;
                 text-align: center;
+            }
+
+            .contract-name h2 {
+                margin: 0;
+                font-size: clamp(1.45rem, 4vw, 2.25rem);
+                letter-spacing: 0.03em;
             }
 
             .contract-title h2 {
                 margin: 0;
                 font-size: clamp(1.45rem, 4vw, 2.25rem);
+                letter-spacing: 0.03em;
+            }
+            .contract-title h3 {
+                margin: 0;
+                font-size: clamp(1.20rem, 4vw, 2.0rem);
                 letter-spacing: 0.03em;
             }
 
@@ -309,19 +355,61 @@ def inject_css() -> None:
                 font-size: 0.9rem;
             }
 
+            .stamp-zone {
+                position: relative;
+                height: clamp(7rem, 18vw, 11rem);
+                display: grid;
+                place-items: center;
+                margin: -0.2rem 0 0.4rem;
+                isolation: isolate;
+            }
+
+            .stamp-zone::before,
+            .stamp-zone::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                width: min(24vw, 10rem);
+                border-top: 2px solid rgba(163, 32, 32, 0.44);
+                opacity: 0;
+                transform: scaleX(0);
+                animation: impact-lines 680ms 940ms ease-out both;
+            }
+
+            .stamp-zone::before {
+                right: calc(50% + 7rem);
+                transform-origin: right center;
+            }
+
+            .stamp-zone::after {
+                left: calc(50% + 7rem);
+                transform-origin: left center;
+            }
+
             .accepted-stamp {
                 display: inline-block;
-                transform: rotate(-7deg);
                 border: 0.24rem solid var(--seal);
                 color: var(--seal);
-                padding: 0.35rem 0.85rem;
-                margin: 0.25rem 0 1rem;
+                padding: 0.38rem 0.95rem;
                 font-size: clamp(2rem, 6vw, 4rem);
                 font-weight: 900;
                 letter-spacing: 0.08em;
                 text-transform: uppercase;
-                opacity: 0.92;
+                opacity: 0;
                 mix-blend-mode: multiply;
+                filter: drop-shadow(0 1.25rem 0 rgba(98, 23, 18, 0.08));
+                transform-origin: 50% 50%;
+                animation: stamp-slam 1180ms 540ms cubic-bezier(0.08, 0.9, 0.12, 1) both;
+                z-index: 3;
+            }
+
+            .confirmation-shell .contract-meta,
+            .confirmation-shell .contract-title,
+            .confirmation-shell .contract-name,
+            .confirmation-shell .assignment-grid,
+            .confirmation-shell .clauses,
+            .confirmation-shell .signature-line {
+                animation: details-settle 520ms 180ms ease-out both;
             }
 
             .assignment-grid {
@@ -372,6 +460,113 @@ def inject_css() -> None:
                 color: white;
             }
 
+            @keyframes document-arrival {
+                0% {
+                    opacity: 0;
+                    transform: translateY(1.2rem) scale(0.985);
+                    filter: blur(2px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                    filter: blur(0);
+                }
+            }
+
+            @keyframes details-settle {
+                0% {
+                    opacity: 0;
+                    transform: translateY(0.5rem);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes stamp-slam {
+                0% {
+                    opacity: 0;
+                    transform: translateY(-18rem) scale(1.45) rotate(-18deg);
+                    filter: blur(3px) drop-shadow(0 2.5rem 1rem rgba(98, 23, 18, 0.14));
+                }
+                54% {
+                    opacity: 1;
+                    transform: translateY(0.65rem) scale(0.86) rotate(-7deg);
+                    filter: blur(0) drop-shadow(0 0.35rem 0 rgba(98, 23, 18, 0.18));
+                }
+                62% {
+                    transform: translateY(-0.28rem) scale(1.06) rotate(-7deg);
+                }
+                70% {
+                    transform: translateY(0.16rem) scale(0.98) rotate(-7deg);
+                }
+                78% {
+                    transform: translateY(0) scale(1.01) rotate(-7deg);
+                }
+                86% {
+                    transform: translateX(-0.08rem) rotate(-7.8deg);
+                }
+                92% {
+                    transform: translateX(0.08rem) rotate(-6.4deg);
+                }
+                100% {
+                    opacity: 0.94;
+                    transform: translateX(0) translateY(0) scale(1) rotate(-7deg);
+                    filter: blur(0) drop-shadow(0 0.15rem 0 rgba(98, 23, 18, 0.16));
+                }
+            }
+
+            @keyframes impact-flash {
+                0%,
+                48% {
+                    opacity: 0;
+                }
+                52% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                }
+            }
+
+            @keyframes impact-lines {
+                0%,
+                45% {
+                    opacity: 0;
+                    transform: scaleX(0);
+                }
+                52% {
+                    opacity: 0.75;
+                    transform: scaleX(1);
+                }
+                100% {
+                    opacity: 0;
+                    transform: scaleX(1.2);
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .confirmation-shell,
+                .confirmation-shell::after,
+                .confirmation-shell .contract-meta,
+                .confirmation-shell .contract-title,
+                .confirmation-shell .contract-name,
+                .confirmation-shell .assignment-grid,
+                .confirmation-shell .clauses,
+                .confirmation-shell .signature-line,
+                .accepted-stamp,
+                .stamp-zone::before,
+                .stamp-zone::after {
+                    animation: none;
+                }
+
+                .accepted-stamp {
+                    opacity: 0.94;
+                    transform: rotate(-7deg);
+                }
+            }
+
             @media (max-width: 760px) {
                 .topbar,
                 .contract-meta,
@@ -383,11 +578,36 @@ def inject_css() -> None:
                     align-items: flex-start;
                     flex-direction: column;
                 }
+
+                .stamp-zone {
+                    height: 7.5rem;
+                }
+
+                .stamp-zone::before,
+                .stamp-zone::after {
+                    width: 4.5rem;
+                }
+
+                .stamp-zone::before {
+                    right: calc(50% + 5.6rem);
+                }
+
+                .stamp-zone::after {
+                    left: calc(50% + 5.6rem);
+                }
             }
         </style>
-        """,
-        unsafe_allow_html=True,
+        """
     )
+
+
+def render_html(markup: str) -> None:
+    """Render literal HTML without letting Markdown treat indented lines as text."""
+    cleaned_markup = textwrap.dedent(markup).strip()
+    if hasattr(st, "html"):
+        st.html(cleaned_markup)
+    else:
+        st.markdown(cleaned_markup, unsafe_allow_html=True)
 
 
 def clean_name(full_name: str) -> str:
@@ -452,27 +672,23 @@ def render_sidebar() -> None:
             "spectatorship in *Spirited Away*. The app uses an original fictional "
             "contract to explore how names and work are transformed by institutions."
         )
-        st.divider()
-        st.caption(
-            "No copyrighted film stills, official logos, or quoted dialogue are used. "
-            "The visual language is inspired by digital signing tools and Japanese "
-            "bathhouse motifs without copying protected assets."
-        )
 
 
 def render_header() -> None:
+    status_text = "Signature Accepted" if st.session_state.get("submitted") else "Awaiting Signature"
+
     st.markdown(
-        """
+        f"""
         <div class="topbar">
             <div class="brand">
                 <span class="brand-mark">印</span>
                 <span>Bathhouse Records Office</span>
             </div>
-            <span class="status-pill">Awaiting Signature</span>
+            <span class="status-pill">{status_text}</span>
         </div>
         <section class="hero">
             <h1>Bathhouse Employment Contract</h1>
-            <p>Before entering, all guests must sign.</p>
+            <p>Before entering, all seekers of employment must sign.</p>
         </section>
         """,
         unsafe_allow_html=True,
@@ -492,7 +708,7 @@ def render_contract_form() -> None:
               <div class="meta-box"><strong>Status</strong>Unsigned</div>
             </div>
             <div class="contract-title">
-              <h2>Fictional Terms of Service and Employment</h2>
+              <h2>Terms of Service and Employment</h2>
             </div>
             <div class="clauses">
               <div class="clause">The applicant requests entry into the bathhouse as a worker and accepts that ordinary guest privileges end at the threshold.</div>
@@ -553,43 +769,52 @@ def render_confirmation() -> None:
     signature = st.session_state.get("signature", full_name)
     assignment = st.session_state.get("assignment", generate_assignment(full_name))
     signed_at = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+    safe_full_name = html.escape(full_name)
+    safe_signature = html.escape(signature)
+    safe_pronouns = html.escape(pronouns) if pronouns else ""
+    safe_contract_number = html.escape(assignment["contract_number"])
+    safe_new_name = html.escape(assignment["new_name"])
+    safe_role = html.escape(assignment["role"])
+    safe_description = html.escape(assignment["description"])
 
-    pronoun_line = f"<div class='meta-box'><strong>Pronouns</strong>{pronouns}</div>" if pronouns else ""
+    pronoun_line = f"<div class='meta-box'><strong>Pronouns</strong>{safe_pronouns}</div>" if pronouns else ""
 
-    st.markdown(
+    render_html(
         f"""
-        <div class="document-shell">
+        <div class="document-shell confirmation-shell">
           <div class="document-inner">
             <div class="contract-meta">
-              <div class="meta-box"><strong>Contract No.</strong>{assignment["contract_number"]}</div>
+              <div class="meta-box"><strong>Contract No.</strong>{safe_contract_number}</div>
               <div class="meta-box"><strong>Accepted</strong>{signed_at}</div>
               {pronoun_line}
             </div>
-            <div class="accepted-stamp">Accepted</div>
+            <div class="stamp-zone" aria-label="Accepted stamp animation">
+              <div class="accepted-stamp">Accepted</div>
+            </div>
             <div class="contract-title">
-              <h2>Your old name has been archived.</h2>
+              <h2>Your old name belongs to me now</h2>
+            </div>
+            <div class="contract-name">
+                <h2> From now on your name is {safe_new_name}</h2>
             </div>
             <div class="assignment-grid">
               <div class="assignment-box">
                 <span>Issued Bathhouse Name</span>
-                <strong>{assignment["new_name"]}</strong>
+                <strong>{safe_new_name}</strong>
               </div>
               <div class="assignment-box">
                 <span>Assigned Role</span>
-                <strong>{assignment["role"]}</strong>
+                <strong>{safe_role}</strong>
               </div>
             </div>
             <div class="clauses">
-              <div class="clause">Former name on file: {full_name}</div>
-              <div class="clause">Signature received: {signature}</div>
-              <div class="clause">First duties: {assignment["description"]}</div>
+              <div class="clause">First duties: {safe_description}</div>
               <div class="clause">Report to the service corridor before the next bell. Bring comfortable shoes and a willingness to be renamed by paperwork.</div>
             </div>
             <div class="signature-line">Bathhouse Records Office Seal</div>
           </div>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     st.button("Reset and Sign Again", on_click=reset_contract)
